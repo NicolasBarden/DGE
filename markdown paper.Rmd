@@ -1,0 +1,18 @@
+---
+title: "DGE quantitative paper"
+author: "Jakob Heibel & Nico Barden"
+date: "2023-05-01"
+output:
+  pdf_document:
+    number_sections: yes
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.align = 'center', message=FALSE, warning=FALSE)
+library(tidyverse)
+library(here)
+library(ggplot2)
+```
+
+TEST
