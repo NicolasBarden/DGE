@@ -157,22 +157,11 @@ data_v3 <- left_join(data_v2, AMECO_rev_tidy)
 
 countries <- pull(count(data_v3, country),country)
 
-data_country_dummys <- tibble()
+data_country_dummys <- data_v3
 
 for(i in 1:length(countries)){
-  assign(countries[i], countries[i])
+  data_country_dummys[[countries[i]]] <- ifelse(
+    data_v3$country == countries[i], 1, 0)
 }
 
-for(i in 1:length(countries)){
-  data_country_dummys <- data_v3 %>% 
-    mutate(assign(countries[i], countries[i]) = ifelse(country == countries[i], 1, 0))
-}
-
-data_country_dummys <- data_v3 %>% 
-  mutate(
-    Cyprus = ifelse(country == countries[5], 1, 0))
-
-assign(countries[5], countries[5])
-
-data_country_dummys <- data_v3 %>% 
-  mutate(Austria = ifelse( country == "Austria", 1, 0))
+#Dummys für alle Jahre
