@@ -1,4 +1,4 @@
-# R-code quantitative paper on the effects of austerity on inequality
+# R-code quantitative paper on the effects of fiscal austerity on inequality
 # authors: Barden, Nicolas & Heibel, Jakob
 # date: 01.06.2023
 
@@ -9,7 +9,11 @@ library(tibble)
 library(data.table)
 library(tidyr)
 library(countrycode)
+library(readxl)
+library(OECD)
 
+
+# Loading data
 # SWIID-Daten // import and edit SWIID-data
 
 data_path_swiid <- here("data/raw/swiid9_4.rda")
@@ -21,7 +25,7 @@ load(data_path_swiid)
 # AMECO Daten (cyc. adj. nach dem Trend GDP) liegen nur für diese Länder vor
 
 swiid_tidy <- filter(swiid_summary, country %in% c(
-  "Belgium", "Bulgaria", "Czechia", "Denmark", "Germany", "Estonia", "Ireland",
+  "Belgium", "Bulgaria", "Czech Republic", "Denmark", "Germany", "Estonia", "Ireland",
   "Greece", "Spain", "France", "Croatia", "Italy", "Cyprus", "Latvia", 
   "Lithuania", "Luxembourg", "Hungary", "Malta", "Netherlands", "Austria",
   "Poland", "Portugal", "Romania", "Slovenia", "Slovakia", "Finland", "Sweden",
@@ -36,6 +40,7 @@ swiid_tidy <- filter(swiid_tidy, year > 1994)
 swiid_tidy <- select(swiid_tidy,
                      country, year, gini_disp, gini_disp_se, gini_mkt,
                      gini_mkt_se)
+swiid_tidy$country[131:156] <- "Czechia"
 
 # AMECO Daten für die cyc. adj. Nettoent- (+) bzw. verschuldung (-)
 # AMECO-data for the cyclically adjusted lending trend by GDP.
@@ -181,21 +186,30 @@ rename("revenue" =
 
 # Using the AMECO exports data to control for exports (lagged).
 
-data_path_AMECO_exports <- here(
-  "data/raw/exports ameco 060523.csv")
+data_exports_raw <- read_xlsx("/Users/nico/Desktop/DGE project/DGE-main/Code/data/raw/excel/AMECO exports 100523.xlsx")
 
-exports_raw <- fread(data_path_OECD_gdp,
-                    sep = ";", dec = ",",
-                    na.strings = "-")
-# tidying the data.
+data_exports_tidy <- data_exports_raw %>%
+  select(-c("Year")) %>%
+  pivot_longer(cols=5:30,values_to = "Year", values_drop_na = FALSE) %>%
+  rename("exports" = "Year","year" = "name") %>%
+  select(-c("Variable", "Unit/Description", "Unit"))
+data_exports_tidy
 
-exports_tidy <- exports_raw %>% 
-  rename("country" = "LOCATION", "exports" = "Value", "year" = "TIME") %>%
-  select(-c("SUBJECT", "INDICATOR", "MEASURE", "FREQUENCY", "Flag Codes"))
-# hier noch country code umwandeln
+#hier fehlt noch year as double mit coClasses?
+
+#data_v4 <- left_join(data_v3, data_exports_tidy)
+
 
 
 # Using the OECD growth data to control for growth (lagged). 
+?search_dataset
+gdp_growth <- get_dataset("MEI", filter = "LOLITOAA...STSA")
+
+
+get_dataset(60703, filter = NULL)
+
+
+###
 
 data_path_OECD_gdp <- here(
   "data/raw/gdp growth 060523.csv")
@@ -212,25 +226,49 @@ gdp_growth <- gdp_growth %>%
  %in% c("AUT", "BEL","BGR", "CYP","DEU", "DNK", "ESP", "EST", "FIN", 
         "FRA", "GBR", "GRC", "HRV", "HUN", "IRL", "ITA", "LTU", "LUX", "LVA",
         "MLT", "NLD", "POL", "PRT", "ROU","SVK", "SVN", "SWE")) %>%
-  mutate(gdp_growth_perc=NA)
-#hier loop zur errechnung der grwoth rate, dann mergen mit datav3
+  mutate(gdp_growth_rate=NA)
+gdp_growth$country <- countrycode(gdp_growth$country, "iso3c", "country.name", nomatch= NA)
+gdp_growth
+
+  countrycode(gdp_growth$country, "iso3c", "country.name", nomatch= NA)
+  gdp_growth
+gdp_growth$gdp_growth_rate <- c(NA, diff(gdp_growth$GDP) / gdp_growth$GDP[-nrow(gdp_growth)])
+gdp_growth_tidy <-  dplyr::filter(
+  gdp_growth, year >= 1995,year <= 2021)
+gdp_growth_tidy
+
+#komische wachstumsraten
+#//
+
+data_path_WB_gdp <- here(
+  "data/raw/WB growth rate 110523.csv")
+
+gdp_growth_WB <- fread(data_path_WB_gdp,
+                    sep = ",", dec = ".", colClasses = list(double=6:66))
+gdp_growth_WB <- gdp_growth_WB %>% mutate_all(~ gsub('"', '', .))
+colnames(gdp_growth_WB) <- gsub('"', '', colnames(gdp_growth_WB))
+colnames(gdp_growth_WB) <- gsub(',', '', colnames(gdp_growth_WB))
+gdp_growth_WB[gdp_growth_WB == ""] <- NA
+gdp_growth_WB[, ncol(gdp_growth_WB)] <- NULL
+
+gdp_growth_WB <- gdp_growth_WB %>% 
+  pivot_longer(cols=4:65,values_to = "Year", values_drop_na = FALSE) 
+
+gdp_growth rename("country" = "Country NameCountryCode", "GDPgrowthrate" = "Year", "year" = "name") %>%
+  select(-c("Indicator Name", "Indicator Code")) 
+## bip_data <- data.table::fread(bip_data_path,
+#colClasses = c("integer", "double", "double"))  
+
+ # select(-c("Indicator Name", "Indicator Code")) %>%
+#  rename("country" = "Country NameCountry Code")
+  
+        
+
+#data_v5 <- left_join(data_v4, gdp_grwoth)
 
 
 
 
-
-
-#Dummys für alle 27 Länder // Können wir mMn direkt in der Regression erstellen
-# siehe unten
-
-#countries <- pull(count(data_v3, country),country)
-
-#data_country_dummys <- data_v3
-
-#for(i in 1:length(countries)){
-#  data_country_dummys[[countries[i]]] <- ifelse(
- #   data_v3$country == countries[i], 1, 0)
-#}
 
 #Dummys für alle Jahre
 
