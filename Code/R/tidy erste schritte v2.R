@@ -71,7 +71,7 @@ AMECO_lending_tidy <- select(AMECO_lending_tidy,
 
 AMECO_lending_tidy <- filter(AMECO_lending_tidy, Country %in% c(
   "Belgium", "Bulgaria", "Czechia", "Denmark", "Germany", "Estonia", "Ireland",
-  "Greece", "Spain", "France", "Croatia", "Italy", "Cyprus", "Latvia", 
+  "Greece", "Spain", "France", "Croatia (1)", "Italy", "Cyprus", "Latvia", 
   "Lithuania", "Luxembourg", "Hungary", "Malta", "Netherlands", "Austria",
   "Poland", "Portugal", "Romania", "Slovenia", "Slovakia", "Finland", "Sweden",
   "United Kingdom"))
@@ -110,7 +110,7 @@ AMECO_exp_tidy <- select(AMECO_exp_tidy,
 
 AMECO_exp_tidy <- filter(AMECO_exp_tidy, Country %in% c(
   "Belgium", "Bulgaria", "Czechia", "Denmark", "Germany", "Estonia", "Ireland",
-  "Greece", "Spain", "France", "Croatia", "Italy", "Cyprus", "Latvia", 
+  "Greece", "Spain", "France", "Croatia (1)", "Italy", "Cyprus", "Latvia", 
   "Lithuania", "Luxembourg", "Hungary", "Malta", "Netherlands", "Austria",
   "Poland", "Portugal", "Romania", "Slovenia", "Slovakia", "Finland", "Sweden",
   "United Kingdom"))
@@ -149,7 +149,7 @@ AMECO_rev_tidy <- select(AMECO_rev_tidy,
 
 AMECO_rev_tidy <- filter(AMECO_rev_tidy, Country %in% c(
   "Belgium", "Bulgaria", "Czechia", "Denmark", "Germany", "Estonia", "Ireland",
-  "Greece", "Spain", "France", "Croatia", "Italy", "Cyprus", "Latvia", 
+  "Greece", "Spain", "France", "Croatia (1)", "Italy", "Cyprus", "Latvia", 
   "Lithuania", "Luxembourg", "Hungary", "Malta", "Netherlands", "Austria",
   "Poland", "Portugal", "Romania", "Slovenia", "Slovakia", "Finland", "Sweden",
   "United Kingdom"))
