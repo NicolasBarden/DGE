@@ -76,6 +76,8 @@ AMECO_lending_tidy <- filter(AMECO_lending_tidy, Country %in% c(
   "Poland", "Portugal", "Romania", "Slovenia", "Slovakia", "Finland", "Sweden",
   "United Kingdom"))
 
+AMECO_lending_tidy$Country[AMECO_lending_tidy$Country == "Croatia (1)"] <- "Croatia"
+
 AMECO_lending_tidy <- rename(AMECO_lending_tidy,
                              country = Country)
 
@@ -115,6 +117,8 @@ AMECO_exp_tidy <- filter(AMECO_exp_tidy, Country %in% c(
   "Poland", "Portugal", "Romania", "Slovenia", "Slovakia", "Finland", "Sweden",
   "United Kingdom"))
 
+AMECO_exp_tidy$Country[AMECO_exp_tidy$Country == "Croatia (1)"] <- "Croatia"
+
 AMECO_exp_tidy <- rename(AMECO_exp_tidy,
                              country = Country)
 
@@ -153,6 +157,8 @@ AMECO_rev_tidy <- filter(AMECO_rev_tidy, Country %in% c(
   "Lithuania", "Luxembourg", "Hungary", "Malta", "Netherlands", "Austria",
   "Poland", "Portugal", "Romania", "Slovenia", "Slovakia", "Finland", "Sweden",
   "United Kingdom"))
+
+AMECO_rev_tidy$Country[AMECO_rev_tidy$Country == "Croatia (1)"] <- "Croatia"
 
 AMECO_rev_tidy <- rename(AMECO_rev_tidy,
                          country = Country)
